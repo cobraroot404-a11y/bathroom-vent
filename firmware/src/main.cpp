@@ -21,7 +21,14 @@
 #include <ArduinoJson.h>
 
 #include "config.h"
+#if __has_include("secrets.h")
 #include "secrets.h"
+#else
+// Keep a clean checkout buildable for CI and local control-law validation.
+// The example values deliberately cannot expose real credentials; copy the
+// example to secrets.h and edit it before expecting Wi-Fi/MQTT connectivity.
+#include "secrets.h.example"
+#endif
 
 // ---------------------------------------------------------------------------
 // Types
