@@ -1,0 +1,27 @@
+# Secrets
+firmware/src/secrets.h
+
+# PlatformIO
+firmware/.pio/
+firmware/.pioenvs/
+firmware/.piolibdeps/
+.pio/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+
+# Docker / Mosquitto runtime data
+broker/data/
+mosquitto-data/
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
