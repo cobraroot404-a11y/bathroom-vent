@@ -18,11 +18,11 @@ DHT22 --(GPIO4)--> ESP32 --(Wi-Fi/MQTT)--> Mosquitto <--> automation.py
 firmware/          PlatformIO project (Arduino framework, ESP32)
   src/main.cpp      control loop, MQTT, sampling, relay driver
   src/config.h      every tunable, named -- no magic numbers
-  src/secrets.h.example   copy to secrets.h (gitignored) and fill in
+  src/secrets.h.example   build-safe placeholders; copy to secrets.h and fill in for networking
 service/
   rules.py          pure control-law functions, no I/O -- unit-testable
   automation.py     subscribes telemetry, runs rules.py, publishes cmd
-tests/test_rules.py pytest suite for rules.py (no hardware, no broker)
+tests/              pytest suites for the rules and MQTT service boundary
 scripts/simulate.py replays a 40-min shower curve at 20x, no hardware needed
 broker/mosquitto.conf
 docker-compose.yml  mosquitto + automation service
@@ -201,6 +201,10 @@ here so nobody adds deep sleep later without also adding the hold.
   the top of `service/rules.py`, named. No magic numbers in the control-law
   logic in either file.
 - `firmware/src/secrets.h` is gitignored; `secrets.h.example` ships instead.
+- A clean checkout compiles using the placeholder values in
+  `secrets.h.example`. Local sensing and relay control remain available, but
+  Wi-Fi/MQTT cannot connect until the example is copied to `secrets.h` and
+  filled in with real network settings.
 
 ## Known limitations
 
@@ -240,13 +244,14 @@ here so nobody adds deep sleep later without also adding the hold.
 ```bash
 cd service && pip install -r requirements.txt
 pip install pytest
-pytest ../tests/test_rules.py -v
+pytest ../tests -v
 ```
 
-All 7 required scenarios (plus one extra covering `is_valid_reading`
-directly) pass. See the top of `tests/test_rules.py` for how each one is
-constructed and why (in particular #1, #4 and #5, where the exact shape of
-the input series matters).
+The suite covers the 7 required control scenarios, direct reading validation,
+malformed MQTT payload handling, and retry-safe initial broker connection.
+See the test modules for how each scenario is constructed and why (in
+particular control scenarios #1, #4 and #5, where the exact shape of the
+input series matters).
 
 ## Bring-up order
 
@@ -256,6 +261,9 @@ the input series matters).
    cp src/secrets.h.example src/secrets.h   # then edit it: Wi-Fi + broker details
    pio run -t upload
    ```
+   A plain `pio run` also works before this step by using the checked-in
+   placeholder configuration. Uploading that placeholder build is safe for
+   offline control-law testing, but it will not connect to Wi-Fi or MQTT.
 2. **Verify serial telemetry** before touching the network at all:
    ```bash
    pio device monitor

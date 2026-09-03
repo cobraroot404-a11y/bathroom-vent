@@ -148,6 +148,12 @@ def on_message(client: mqtt.Client, userdata, msg: mqtt.MQTTMessage) -> None:
         except (ValueError, UnicodeDecodeError) as exc:
             log.warning("dropping malformed telemetry payload: %s", exc)
             return
+        if not isinstance(payload, dict):
+            log.warning(
+                "dropping telemetry payload that is not a JSON object: %s",
+                type(payload).__name__,
+            )
+            return
         now = _device_now(payload)
         action = automation.handle_telemetry(payload, now)
         cmd = automation.build_cmd(action)
@@ -173,8 +179,12 @@ def main() -> None:
     client.reconnect_delay_set(min_delay=1, max_delay=30)
 
     log.info("connecting to %s:%s ...", MQTT_HOST, MQTT_PORT)
-    client.connect(MQTT_HOST, MQTT_PORT, keepalive=MQTT_KEEPALIVE_S)
-    client.loop_forever()
+    # connect_async() lets the network loop own both the initial connection
+    # and later reconnects.  With retry_first_connection enabled, starting
+    # this process before the broker is ready no longer terminates it with an
+    # uncaught ConnectionRefusedError.
+    client.connect_async(MQTT_HOST, MQTT_PORT, keepalive=MQTT_KEEPALIVE_S)
+    client.loop_forever(retry_first_connection=True)
 
 
 if __name__ == "__main__":
