@@ -349,3 +349,9 @@ and watch `mosquitto_sub -t 'home/bathroom/vent/#' -v` (or the
   autonomous rule's own conclusion, on the theory that a service crash
   mid-manual-override should never be able to strand the fan in a state the
   firmware's own local rule wouldn't have chosen.
+
+
+## License
+
+Copyright (c) 2026 Gautham. This project is available under the
+[MIT License](LICENSE).
