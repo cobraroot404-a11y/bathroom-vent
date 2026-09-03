@@ -1,5 +1,7 @@
 # bathroom-vent
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Automated, energy-efficient bathroom ventilation. An ESP32 + DHT22 reads
 humidity, publishes telemetry over MQTT, a Python automation service
 evaluates the same hysteresis-based rule for observability, and a relay
