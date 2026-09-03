@@ -1,5 +1,7 @@
 # bathroom-vent
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Automated, energy-efficient bathroom ventilation. An ESP32 + DHT22 reads
 humidity, publishes telemetry over MQTT, a Python automation service
 evaluates the same hysteresis-based rule for observability, and a relay
@@ -349,3 +351,9 @@ and watch `mosquitto_sub -t 'home/bathroom/vent/#' -v` (or the
   autonomous rule's own conclusion, on the theory that a service crash
   mid-manual-override should never be able to strand the fan in a state the
   firmware's own local rule wouldn't have chosen.
+
+
+## License
+
+Copyright (c) 2026 Gautham. This project is available under the
+[MIT License](LICENSE).
